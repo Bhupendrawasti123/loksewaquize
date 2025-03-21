@@ -98,11 +98,24 @@ function startTimer() {
         
         if (timeLeft <= 0) {
             clearInterval(timer); // Stop the timer
+            showModal(); // Show the Time's Up modal
             currentQuestion++; // Move to the next question
             startTimer(); // Start the timer for the next question
             showQuestion(questions);
         }
     }, 1000);
+}
+
+// Show the Time's Up modal
+function showModal() {
+    const modal = document.getElementById('timeUpModal');
+    modal.style.display = 'flex';
+}
+
+// Close the Time's Up modal
+function closeModal() {
+    const modal = document.getElementById('timeUpModal');
+    modal.style.display = 'none';
 }
 
 // Result Screen
