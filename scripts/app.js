@@ -1,7 +1,7 @@
 let currentQuestion = 0;
 let score = 0;
 let timer;
-const TIME_LIMIT = 10;
+const TIME_LIMIT = 10; // Time limit for each question
 let questions = []; // Store the selected random questions
 
 // Map subject names to display names
@@ -43,7 +43,7 @@ function loadQuiz() {
 
             // Select 10 random questions
             questions = getRandomQuestions(allQuestions, 10);
-            startTimer();
+            startTimer(); // Start the timer for the first question
             showQuestion(questions);
         })
         .catch(error => {
@@ -81,10 +81,10 @@ function showQuestion(questions) {
 }
 
 function checkAnswer(selected, correct, questions) {
+    clearInterval(timer); // Stop the current timer
     if (selected === correct) score++;
     currentQuestion++;
-    clearInterval(timer); // Stop the current timer
-    startTimer(); // Start a new timer for the next question
+    startTimer(); // Start the timer for the next question
     showQuestion(questions);
 }
 
@@ -97,9 +97,10 @@ function startTimer() {
         document.getElementById('time').textContent = timeLeft;
         
         if (timeLeft <= 0) {
-            clearInterval(timer);
-            currentQuestion++;
-            showQuestion(questions); // Move to the next question
+            clearInterval(timer); // Stop the timer
+            currentQuestion++; // Move to the next question
+            startTimer(); // Start the timer for the next question
+            showQuestion(questions);
         }
     }, 1000);
 }
