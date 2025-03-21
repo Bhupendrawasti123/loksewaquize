@@ -27,7 +27,7 @@ function loadQuiz() {
 
     // Set the custom subject name in the heading
     const displayName = subjectDisplayNames[subject] || subject;
-    document.getElementById('subject-title').textContent = displayName + ' MCQ';
+    document.getElementById('subject-title').textContent = displayName + ' Quiz';
     
     fetch(`data/${subject}.json`)
         .then(response => {
@@ -99,9 +99,6 @@ function startTimer() {
         if (timeLeft <= 0) {
             clearInterval(timer); // Stop the timer
             showModal(); // Show the Time's Up modal
-            currentQuestion++; // Move to the next question
-            startTimer(); // Start the timer for the next question
-            showQuestion(questions);
         }
     }, 1000);
 }
@@ -112,10 +109,15 @@ function showModal() {
     modal.style.display = 'flex';
 }
 
-// Close the Time's Up modal
+// Close the Time's Up modal and proceed to the next question
 function closeModal() {
     const modal = document.getElementById('timeUpModal');
-    modal.style.display = 'none';
+    modal.style.display = 'none'; // Hide the modal
+
+    // Move to the next question
+    currentQuestion++;
+    startTimer(); // Start the timer for the next question
+    showQuestion(questions);
 }
 
 // Result Screen
