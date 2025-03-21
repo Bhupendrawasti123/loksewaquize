@@ -4,6 +4,15 @@ let timer;
 const TIME_LIMIT = 10;
 let questions = []; // Store the selected random questions
 
+// Map subject names to display names
+const subjectDisplayNames = {
+    history: "इतिहास",
+    science: "विज्ञान",
+    geography: "भूगोल",
+    intorg: "अन्तर्राष्ट्रिय संघ संस्था",
+    iq: "आईक्यू"
+};
+
 function startQuiz(subject) {
     localStorage.setItem('currentSubject', subject);
     window.location.href = 'quiz.html';
@@ -16,7 +25,9 @@ function loadQuiz() {
         return;
     }
 
-    document.getElementById('subject-title').textContent = subject + ' Quiz';
+    // Set the custom subject name in the heading
+    const displayName = subjectDisplayNames[subject] || subject;
+    document.getElementById('subject-title').textContent = displayName + ' Quiz';
     
     fetch(`data/${subject}.json`)
         .then(response => {
@@ -49,6 +60,7 @@ function getRandomQuestions(allQuestions, count) {
 
 function showQuestion(questions) {
     if (currentQuestion >= questions.length) {
+        clearInterval(timer); // Stop the timer
         localStorage.setItem('score', score);
         window.location.href = 'quiz-result.html';
         return;
@@ -71,6 +83,8 @@ function showQuestion(questions) {
 function checkAnswer(selected, correct, questions) {
     if (selected === correct) score++;
     currentQuestion++;
+    clearInterval(timer); // Stop the current timer
+    startTimer(); // Start a new timer for the next question
     showQuestion(questions);
 }
 
@@ -85,7 +99,7 @@ function startTimer() {
         if (timeLeft <= 0) {
             clearInterval(timer);
             currentQuestion++;
-            loadQuiz();
+            showQuestion(questions); // Move to the next question
         }
     }, 1000);
 }
