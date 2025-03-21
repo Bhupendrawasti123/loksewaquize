@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-header">
+            <h2 id="subject-title"></h2>
+            <div id="timer">Time Left: <span id="time">10</span> sec</div>
+        </div>
+        <div id="question-container">
+            <h3 id="question"></h3>
+            <div id="options"></div>
+        </div>
+    </div>
+    <script src="scripts/app.js"></script>
+</body>
+</html>
