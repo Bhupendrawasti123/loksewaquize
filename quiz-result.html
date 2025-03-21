@@ -8,6 +8,14 @@
     <div class="container">
         <h1>Quiz Result</h1>
         <div id="score" class="score-display"></div>
+
+        <!-- Collapsible Section for Correct Answers -->
+        <button id="showResultsBtn" class="btn" onclick="toggleResults()">Show Results</button>
+        <div id="resultsSection" class="results-section">
+            <h3>Correct Answers</h3>
+            <ul id="correctAnswersList"></ul>
+        </div>
+
         <button class="btn" onclick="window.location.href='index.html'">Go Back</button>
     </div>
     <script src="scripts/app.js"></script>
