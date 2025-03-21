@@ -27,7 +27,7 @@ function loadQuiz() {
 
     // Set the custom subject name in the heading
     const displayName = subjectDisplayNames[subject] || subject;
-    document.getElementById('subject-title').textContent = displayName + ' Quiz';
+    document.getElementById('subject-title').textContent = displayName + ' MCQ';
     
     fetch(`data/${subject}.json`)
         .then(response => {
