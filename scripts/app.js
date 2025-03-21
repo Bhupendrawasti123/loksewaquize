@@ -2,6 +2,7 @@ let currentQuestion = 0;
 let score = 0;
 let timer;
 const TIME_LIMIT = 10;
+let questions = []; // Store the selected random questions
 
 function startQuiz(subject) {
     localStorage.setItem('currentSubject', subject);
@@ -24,10 +25,13 @@ function loadQuiz() {
             }
             return response.json();
         })
-        .then(questions => {
-            if (!questions || questions.length === 0) {
+        .then(allQuestions => {
+            if (!allQuestions || allQuestions.length === 0) {
                 throw new Error('No questions found');
             }
+
+            // Select 10 random questions
+            questions = getRandomQuestions(allQuestions, 10);
             startTimer();
             showQuestion(questions);
         })
@@ -35,6 +39,12 @@ function loadQuiz() {
             console.error('Error fetching questions:', error);
             alert('Failed to load questions. Please try again.');
         });
+}
+
+function getRandomQuestions(allQuestions, count) {
+    // Shuffle the array and pick the first `count` questions
+    const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
 }
 
 function showQuestion(questions) {
