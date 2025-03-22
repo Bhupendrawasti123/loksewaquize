@@ -3,7 +3,7 @@ let score = 0;
 let timer;
 const TIME_LIMIT = 10; // Time limit for each question
 let questions = []; // Store the selected random questions
-let correctAnswers = []; // Store correct answers for the result page
+let quizResults = []; // Store questions and correct answers for the result page
 
 // Map subject names to display names
 const subjectDisplayNames = {
@@ -63,7 +63,7 @@ function showQuestion(questions) {
     if (currentQuestion >= questions.length) {
         clearInterval(timer); // Stop the timer
         localStorage.setItem('score', score);
-        localStorage.setItem('correctAnswers', JSON.stringify(correctAnswers)); // Save correct answers
+        localStorage.setItem('quizResults', JSON.stringify(quizResults)); // Save quiz results
         window.location.href = 'quiz-result.html';
         return;
     }
@@ -86,8 +86,11 @@ function checkAnswer(selected, correct, questions) {
     clearInterval(timer); // Stop the current timer
     if (selected === correct) score++;
 
-    // Store the correct answer for the result page
-    correctAnswers.push(correct);
+    // Store the question and correct answer for the result page
+    quizResults.push({
+        question: questions[currentQuestion].question,
+        correctAnswer: correct
+    });
 
     currentQuestion++;
     startTimer(); // Start the timer for the next question
@@ -144,19 +147,22 @@ function toggleResults() {
 window.onload = function() {
     if (window.location.pathname.endsWith('result.html')) {
         const score = localStorage.getItem('score');
-        const storedCorrectAnswers = JSON.parse(localStorage.getItem('correctAnswers'));
+        const storedQuizResults = JSON.parse(localStorage.getItem('quizResults'));
 
         // Display the score
         document.getElementById('score').textContent = `Your Score: ${score}`;
 
-        // Display the correct answers if available
-        if (storedCorrectAnswers && storedCorrectAnswers.length > 0) {
+        // Display the questions and correct answers if available
+        if (storedQuizResults && storedQuizResults.length > 0) {
             const correctAnswersList = document.getElementById('correctAnswersList');
             correctAnswersList.innerHTML = ''; // Clear previous content
 
-            storedCorrectAnswers.forEach((answer, index) => {
+            storedQuizResults.forEach((result, index) => {
                 const listItem = document.createElement('li');
-                listItem.textContent = `Question ${index + 1}: ${answer}`;
+                listItem.innerHTML = `
+                    <strong>Question ${index + 1}:</strong> ${result.question}<br>
+                    <strong>Correct Answer:</strong> ${result.correctAnswer}
+                `;
                 correctAnswersList.appendChild(listItem);
             });
         }
