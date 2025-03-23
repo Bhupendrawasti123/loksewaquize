@@ -136,3 +136,9 @@ body {
     background-color: #e3f2fd;
     border-radius: 5px;
 }
+
+.results-section li strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+  
