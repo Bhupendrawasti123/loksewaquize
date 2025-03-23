@@ -89,7 +89,8 @@ function checkAnswer(selected, correct, questions) {
     // Store the question and correct answer for the result page
     quizResults.push({
         question: questions[currentQuestion].question,
-        correctAnswer: correct
+        correctAnswer: correct,
+        userAnswer: selected
     });
 
     currentQuestion++;
@@ -107,7 +108,24 @@ function startTimer() {
         
         if (timeLeft <= 0) {
             clearInterval(timer); // Stop the timer
-            showModal(); // Show the Time's Up modal
+
+            // Store the timed-out question and correct answer
+            quizResults.push({
+                question: questions[currentQuestion].question,
+                correctAnswer: questions[currentQuestion].answer,
+                userAnswer: null // No answer provided
+            });
+
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                startTimer(); // Start the timer for the next question
+                showQuestion(questions);
+            } else {
+                // End the quiz if all questions are done
+                localStorage.setItem('score', score);
+                localStorage.setItem('quizResults', JSON.stringify(quizResults));
+                window.location.href = 'quiz-result.html';
+            }
         }
     }, 1000);
 }
@@ -130,16 +148,16 @@ function closeModal() {
 }
 
 // Function to toggle the visibility of the results section
-function toggleResults() {
+function toggleAnswers() {
     const resultsSection = document.getElementById('resultsSection');
-    const showResultsBtn = document.getElementById('showResultsBtn');
+    const showAnswersBtn = document.getElementById('showAnswersBtn');
     
     if (resultsSection.style.display === 'none' || resultsSection.style.display === '') {
         resultsSection.style.display = 'block';
-        showResultsBtn.textContent = 'Hide Results';
+        showAnswersBtn.textContent = 'Hide Answers';
     } else {
         resultsSection.style.display = 'none';
-        showResultsBtn.textContent = 'Show Results';
+        showAnswersBtn.textContent = 'Show Answers';
     }
 }
 
