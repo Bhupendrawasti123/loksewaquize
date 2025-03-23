@@ -171,15 +171,14 @@ window.onload = function() {
     }
 };
 
-        // Function to show the About Us modal
-        function showAboutModal() {
-            const modal = document.getElementById('aboutModal');
-            modal.style.display = 'flex';
-        }
+// Function to show the About Us modal
+function showAboutModal() {
+    const modal = document.getElementById('aboutModal');
+    modal.style.display = 'flex';
+}
 
-        // Function to close the About Us modal
-        function closeAboutModal() {
-            const modal = document.getElementById('aboutModal');
-            modal.style.display = 'none';
-        }
-  
+// Function to close the About Us modal
+function closeAboutModal() {
+    const modal = document.getElementById('aboutModal');
+    modal.style.display = 'none';
+}
