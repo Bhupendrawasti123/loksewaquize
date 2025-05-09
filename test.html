@@ -1,0 +1,525 @@
+<html>
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"></link>
+    <style>
+        /* General Styles */
+        .container {
+            margin: 0 auto;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* Buttons */
+        .subject-btn, .btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            margin: 10px auto;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Quiz Container */
+        #question-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        #options button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #e3f2fd;
+            border: 1px solid #2196F3;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Timer */
+        #timer {
+            color: red;
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        /* Score Display */
+        .score-display {
+            font-size: 1.5rem;
+            margin: 20px 0;
+            color: #2196F3;
+        }
+
+        /* Results Section Styles */
+        .results-section {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .results-section h3 {
+            margin-top: 0;
+            color: #2196F3;
+        }
+
+        .results-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .results-section li {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f5f9ff;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .results-section li strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .results-section .correct {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .results-section .incorrect {
+            color: #F44336;
+            font-weight: bold;
+        }
+
+        /* About Content */
+        #aboutModal .modal-content {
+            text-align: left;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 90%;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .modal button {
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Font Awesome Icon Styles */
+        .fa-icon {
+            margin-right: 10px;
+            color: #2196F3;
+        }
+
+        /* Facebook Link Style */
+        .facebook-link {
+            color: #2196F3;
+            text-decoration: none;
+        }
+
+        .facebook-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error Message */
+        .error-message {
+            color: red;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        /* Page containers */
+        #index-container, #quiz-container, #result-container {
+            display: none;
+        }
+
+        body[data-page="index"] #index-container,
+        body[data-page="quiz"] #quiz-container,
+        body[data-page="result"] #result-container {
+            display: block;
+        }
+    </style>
+</head>
+<body data-page="index">
+    <!-- Home Page -->
+    <div class="container" id="index-container">
+        <h3>Please Select Subject</h3>
+        <div class="subject-list">
+            <button class="subject-btn" onclick="startQuiz('history')">इतिहास</button>
+            <button class="subject-btn" onclick="startQuiz('science')">विज्ञान,स्वास्थ्य तथा वातावरण</button>
+            <button class="subject-btn" onclick="startQuiz('nplgeography')">नेपालको भूगोल</button>
+            <button class="subject-btn" onclick="startQuiz('intorg')">अन्तर्राष्ट्रिय संघ संस्था</button>
+            <button class="subject-btn" onclick="startQuiz('iq')">आईक्यू</button>
+        </div>
+        <a class="about-link" href="#" onclick="showAboutModal()">About Us</a>
+    </div>
+
+    <!-- Quiz Page -->
+    <div class="container" id="quiz-container">
+        <div class="quiz-header">
+            <h2 id="subject-title"></h2>
+            <div id="timer">Time Left: <span id="time">10</span> sec</div>
+        </div>
+        <div id="question-container">
+            <div class="spinner" id="loading-spinner" style="display: none;"></div>
+            <div class="error-message" id="error-message" style="display: none;"></div>
+            <h3 id="question"></h3>
+            <div id="options"></div>
+        </div>
+    </div>
+
+    <!-- Result Page -->
+    <div class="container" id="result-container">
+        <h1>Quiz Result</h1>
+        <div class="score-display" id="score"></div>
+        <button class="btn" id="showAnswersBtn" onclick="toggleAnswers()">Show Answers</button>
+        <div class="results-section" id="resultsSection">
+            <h3>Detailed Results</h3>
+            <ul id="correctAnswersList"></ul>
+        </div>
+        <button class="btn" onclick="goBack()">Go Back</button>
+    </div>
+
+    <!-- About Us Modal -->
+    <div class="modal" id="aboutModal">
+        <div class="modal-content">
+            <h2>About Us</h2>
+            <p><i class="fas fa-user fa-icon"></i><strong>Publisher:</strong> Bhupendra Wasti</p>
+            <p><i class="fas fa-envelope fa-icon"></i><strong>Contact:</strong> <a href="mailto:bhupendrawastiinr@gmail.com">bhupendrawastiinr@gmail.com</a></p>
+            <p><i class="fas fa-globe fa-icon"></i><strong>Website:</strong> <a href="https://bhupendrawasti.com.np/" target="_blank">bhupendrawasti.com.np</a></p>
+            <p><i class="fab fa-facebook fa-icon"></i><strong>Facebook:</strong> <a class="facebook-link" href="https://www.facebook.com/BhupendraWasti.Official/" target="_blank">Bhupendra Wasti</a></p>
+            <p><i class="fas fa-code fa-icon"></i><strong>Version:</strong> 1.0.0</p>
+            <p class="copyright"><i class="fas fa-copyright fa-icon"></i>2025 Bhupendra Wasti. All rights reserved.</p>
+            <button onclick="closeAboutModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Time's Up Modal -->
+    <div class="modal" id="timeUpModal">
+        <div class="modal-content">
+            <h2>Time's Up!</h2>
+            <p>The time has run out for this question.</p>
+            <button onclick="handleTimeUpContinue()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentQuestion = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 10;
+        let questions = [];
+        let quizResults = [];
+
+        const subjectDisplayNames = {
+            history: "इतिहास",
+            science: "विज्ञान,स्वास्थ्य तथा वातावरण",
+            nplgeography: "नेपालको भूगोल",
+            intorg: "अन्तर्राष्ट्रिय संघ संस्था",
+            iq: "आईक्यू"
+        };
+
+        // Initialize the app
+        function initApp() {
+            const path = window.location.hash;
+            document.body.setAttribute("data-page", path === "#quiz" ? "quiz" : path === "#result" ? "result" : "index");
+            
+            if (path === "#quiz") {
+                loadQuiz();
+            } else if (path === "#result") {
+                showResults();
+            }
+        }
+
+        function startQuiz(subject) {
+            localStorage.setItem('currentSubject', subject);
+            window.location.hash = "quiz";
+            initApp();
+        }
+
+        function goBack() {
+            window.location.hash = "";
+            initApp();
+            resetQuiz();
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            questions = [];
+            quizResults = [];
+            clearInterval(timer);
+        }
+
+        function loadQuiz() {
+            const subject = localStorage.getItem('currentSubject');
+            if (!subject) {
+                showError('No subject selected. Please go back and select a subject.');
+                return;
+            }
+
+            document.getElementById('loading-spinner').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('subject-title').textContent = subjectDisplayNames[subject] || 'MCQ Test';
+
+            fetch(`https://bhupendrawasti123.github.io/loksewaquize/data/${subject}.json`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(allQuestions => {
+                    if (!allQuestions?.length) throw new Error('No questions found');
+                    questions = getRandomQuestions(allQuestions, Math.min(10, allQuestions.length));
+                    
+                    // Check if the first question has a subject field and use it
+                    const quizSubject = question.subject || subjectDisplayNames[subject] || 'MCQ Test';
+                    document.getElementById('subject-title').textContent = quizSubject;
+                    
+                    resetTimer();
+                    showQuestion();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError('Failed to load questions. Please try again later.');
+                    document.getElementById('subject-title').textContent = subjectDisplayNames[subject] || 'MCQ Test';
+                })
+                .finally(() => {
+                    document.getElementById('loading-spinner').style.display = 'none';
+                });
+        }
+
+        function getRandomQuestions(allQuestions, count) {
+            return [...allQuestions]
+                .sort(() => 0.5 - Math.random())
+                .slice(0, count);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                endQuiz();
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            document.getElementById('question').textContent = question.question;
+            
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            const shuffledOptions = shuffleArray([...question.options]);
+            
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option, question.answer);
+                optionsDiv.appendChild(button);
+            });
+
+            resetTimer();
+        }
+
+        function checkAnswer(selected, correct) {
+            clearInterval(timer);
+            const isCorrect = selected === correct;
+            if (isCorrect) score++;
+
+            quizResults.push({
+                question: questions[currentQuestion].question,
+                subject: questions[currentQuestion].subject,
+                correctAnswer: correct,
+                userAnswer: selected,
+                isCorrect: isCorrect,
+                description: questions[currentQuestion].description || 'No explanation available'
+            });
+
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            let timeLeft = TIME_LIMIT;
+            document.getElementById('time').textContent = timeLeft;
+
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function handleTimeUp() {
+            clearInterval(timer);
+            showTimeUpModal();
+            
+            quizResults.push({
+                question: questions[currentQuestion].question,
+                subject: questions[currentQuestion].subject,
+                correctAnswer: questions[currentQuestion].answer,
+                userAnswer: null,
+                isCorrect: false,
+                description: questions[currentQuestion].description || 'No explanation available'
+            });
+        }
+
+        function handleTimeUpContinue() {
+            closeTimeUpModal();
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function showTimeUpModal() {
+            document.getElementById('timeUpModal').style.display = 'flex';
+        }
+
+        function closeTimeUpModal() {
+            document.getElementById('timeUpModal').style.display = 'none';
+        }
+
+        function endQuiz() {
+            clearInterval(timer);
+            localStorage.setItem('score', score);
+            localStorage.setItem('quizResults', JSON.stringify(quizResults));
+            window.location.hash = "result";
+            initApp();
+        }
+
+        function showResults() {
+            const score = localStorage.getItem('score') || 0;
+            const storedQuizResults = JSON.parse(localStorage.getItem('quizResults')) || [];
+
+            document.getElementById('score').textContent = `Your Score: ${score} out of ${storedQuizResults.length}`;
+
+            if (storedQuizResults.length) {
+                const correctAnswersList = document.getElementById('correctAnswersList');
+                correctAnswersList.innerHTML = '';
+
+                storedQuizResults.forEach((result, index) => {
+                    const listItem = document.createElement('li');
+                    const userAnswerClass = result.isCorrect ? 'correct' : 'incorrect';
+                    const userAnswerDisplay = result.userAnswer !== null ? 
+                        `<span class="${userAnswerClass}">${result.userAnswer}</span> ${result.isCorrect ? '✅' : '❌'}` : 
+                        '<span class="incorrect">(No answer - time out)</span>';
+                    
+                    listItem.innerHTML = `
+                        <div><strong>Question ${index + 1}:</strong> ${result.question}</div>
+                        <div><strong>Subject:</strong> ${result.subject || 'General'}</div>
+                        <div><strong>Your Answer:</strong> ${userAnswerDisplay}</div>
+                        <div><strong>Correct Answer:</strong> ${result.correctAnswer}</div>
+                        <div><strong>Explanation:</strong> ${result.description}</div>
+                    `;
+                    correctAnswersList.appendChild(listItem);
+                });
+            }
+        }
+
+        function toggleAnswers() {
+            const resultsSection = document.getElementById('resultsSection');
+            const showAnswersBtn = document.getElementById('showAnswersBtn');
+            
+            if (resultsSection.style.display === 'none' || resultsSection.style.display === '') {
+                resultsSection.style.display = 'block';
+                showAnswersBtn.textContent = 'Hide Answers';
+            } else {
+                resultsSection.style.display = 'none';
+                showAnswersBtn.textContent = 'Show Answers';
+            }
+        }
+
+        function showAboutModal() {
+            document.getElementById('aboutModal').style.display = 'flex';
+        }
+
+        function closeAboutModal() {
+            document.getElementById('aboutModal').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // Initialize the app
+        window.onload = initApp;
+        window.onhashchange = initApp;
+    </script>
+</body>
+</html>
